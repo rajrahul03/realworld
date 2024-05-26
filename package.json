@@ -40,7 +40,7 @@
     "storybook": "nx run storybook:storybook",
     "build-storybook": "nx run storybook:build-storybook",
     "chromatic": "npx chromatic",
-    "build:prod": "nx build --prod" // Added build:prod script
+    "build:prod": "nx build --prod"
   },
   "prisma": {
     "seed": "tsx ./apps/api/src/prisma/seed.ts",
