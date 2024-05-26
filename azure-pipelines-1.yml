@@ -36,3 +36,6 @@ jobs:
         npm ci --no-audit --prefer-offline --progress=false
       displayName: 'Install dependencies'
       condition: ne(variables['Agent.CacheRestored'], 'true')      
+    - script: |
+        npx nx build documentation
+      displayName: 'Build documentation'      
