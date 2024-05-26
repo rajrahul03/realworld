@@ -39,8 +39,7 @@
     "prepare": "node -e \"if (process.env.NODE_ENV !== 'production'){process.exit(1)} \" || husky install",
     "storybook": "nx run storybook:storybook",
     "build-storybook": "nx run storybook:build-storybook",
-    "chromatic": "npx chromatic",
-    "build:prod": "nx build --prod"
+    "chromatic": "npx chromatic"
   },
   "prisma": {
     "seed": "tsx ./apps/api/src/prisma/seed.ts",
