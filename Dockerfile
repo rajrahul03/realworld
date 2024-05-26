@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies using the legacy-peer-deps option
+RUN npm install --legacy-peer-deps
 
 # Copy all source files
 COPY . .
@@ -25,10 +25,11 @@ WORKDIR /app
 # Copy the build output from the previous stage
 COPY --from=builder /app/dist/apps/realworld /app
 
-# Install only production dependencies
+# Copy package.json and package-lock.json
 COPY package*.json ./
-RUN npm install --legacy-peer-deps --production
 
+# Install only production dependencies using the legacy-peer-deps option
+RUN npm install --legacy-peer-deps --production
 
 # Expose the application port (adjust this based on your application)
 EXPOSE 3000
