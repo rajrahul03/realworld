@@ -1,42 +1,153 @@
 trigger:
-- none
+- main
 
-jobs:
-  # - job: linting
-  #   displayName: 'Linting'
-  #   pool:
-  #     vmImage: 'ubuntu-latest'
-  #   steps:
-  #     - checkout: self
-
-  #     - task: UseNode@1
-  #       inputs:
-  #         version: '18.x'
-  #         checkLatest: true
-
-  #     - script: |
-  #         echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
-  #       displayName: 'Get node version'
-
-  #     - script: |
-  #         npm ci --no-audit --prefer-offline --progress=false
-  #       displayName: 'Install dependencies'
-  #       condition: ne(variables['Agent.CacheRestored'], 'true')
-
-  #     - script: |
-  #         npm run prettier:check
-  #       displayName: 'Check prettier'
-  - job: build_documentation
-    displayName: 'Build Documentation'
-    # dependsOn: [linting]
+stages:
+- stage: Build_and_Test
+  displayName: 'Build and Test'
+  jobs:
+  - job: linting
+    displayName: 'Linting'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      - checkout: self    
-      - script: |
-          npm ci --no-audit --prefer-offline --progress=false
-        displayName: 'Install dependencies'
-        condition: ne(variables['Agent.CacheRestored'], 'true')  
-      - script: |
-          npx nx build documentation --skip-nx-cache
-        displayName: 'Build documentation'      
+    - checkout: self
+
+    - task: UseNode@1
+      inputs:
+        version: '18.x'
+        checkLatest: true
+
+    - script: |
+        echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
+      displayName: 'Get node version'
+
+    - task: CacheBeta@0
+      inputs:
+        key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
+        path: '**/node_modules'
+
+    - script: |
+        npm ci --no-audit --prefer-offline --progress=false
+      displayName: 'Install dependencies'
+      condition: ne(variables['Agent.CacheRestored'], 'true')
+
+    - script: |
+        npm run prettier:check
+      displayName: 'Check prettier'
+
+    - script: |
+        npm run lint:check
+      displayName: 'Check ESLinter'
+
+  - job: unit_testing_api
+    displayName: 'Unit Testing (API)'
+    dependsOn: linting
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+
+    - task: UseNode@1
+      inputs:
+        version: '18.x'
+        checkLatest: true
+
+    - script: |
+        echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
+      displayName: 'Get node version'
+
+    - task: CacheBeta@0
+      inputs:
+        key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
+        path: '**/node_modules'
+
+    - script: |
+        npm ci --no-audit --prefer-offline --progress=false
+      displayName: 'Install dependencies'
+      condition: ne(variables['Agent.CacheRestored'], 'true')
+
+    - script: |
+        npm run test --ci --lastCommit --maxWorkers=50%
+      displayName: 'Check unit tests (API)'
+
+  - job: unit_testing_demo
+    displayName: 'Unit Testing (Demo)'
+    dependsOn: linting
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+
+    - task: UseNode@1
+      inputs:
+        version: '18.x'
+        checkLatest: true
+
+    - script: |
+        echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
+      displayName: 'Get node version'
+
+    - task: CacheBeta@0
+      inputs:
+        key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
+        path: '**/node_modules'
+
+    - script: |
+        npm ci --no-audit --prefer-offline --progress=false
+      displayName: 'Install dependencies'
+      condition: ne(variables['Agent.CacheRestored'], 'true')
+
+    - script: |
+        echo "No unit tests for demo"
+      displayName: 'Check unit tests'
+
+- stage: Deploy
+  displayName: 'Deploy'
+  jobs:
+  - job: deploy_live_demo
+    displayName: 'Deploy Live (Demo)'
+#    dependsOn: none
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+
+    - task: UseNode@1
+      inputs:
+        version: '16.x'
+        checkLatest: true
+
+    - script: |
+        echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
+      displayName: 'Get node version'
+
+    - task: CacheBeta@0
+      inputs:
+        key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
+        path: '**/node_modules'
+
+    - script: |
+        npm ci --no-audit --prefer-offline --progress=false
+      displayName: 'Install dependencies'
+      condition: ne(variables['Agent.CacheRestored'], 'true')
+
+    - script: |
+        npx nx build demo
+      displayName: 'Build demo'
+
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          npx netlify deploy --auth $(NETLIFY_AUTH_TOKEN) --site $(DEMO_NETLIFY_ID) --dir ./dist/apps/demo --prod
+      displayName: 'Deploy to Netlify'
+      env:
+        NETLIFY_AUTH_TOKEN: $(NETLIFY_AUTH_TOKEN)
+        DEMO_NETLIFY_ID: $(DEMO_NETLIFY_ID)
+
+  - job: deploy_other_service
+    displayName: 'Deploy Other Service'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
