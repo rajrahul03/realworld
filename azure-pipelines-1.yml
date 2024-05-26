@@ -38,5 +38,5 @@ jobs:
         displayName: 'Install dependencies'
         condition: ne(variables['Agent.CacheRestored'], 'true')  
       - script: |
-          npx nx build documentation
+          npx nx build documentation --skip-nx-cache
         displayName: 'Build documentation'      
