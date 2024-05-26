@@ -21,10 +21,10 @@ stages:
         echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
       displayName: 'Get node version'
 
-    - task: CacheBeta@0
-      inputs:
-        key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
-        path: '**/node_modules'
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
+    #     path: '**/node_modules'
 
     - script: |
         npm ci --no-audit --prefer-offline --progress=false
@@ -56,10 +56,10 @@ stages:
         echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
       displayName: 'Get node version'
 
-    - task: CacheBeta@0
-      inputs:
-        key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
-        path: '**/node_modules'
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
+    #     path: '**/node_modules'
 
     - script: |
         npm ci --no-audit --prefer-offline --progress=false
@@ -87,10 +87,10 @@ stages:
         echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
       displayName: 'Get node version'
 
-    - task: CacheBeta@0
-      inputs:
-        key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
-        path: '**/node_modules'
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
+    #     path: '**/node_modules'
 
     - script: |
         npm ci --no-audit --prefer-offline --progress=false
@@ -121,10 +121,10 @@ stages:
         echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
       displayName: 'Get node version'
 
-    - task: CacheBeta@0
-      inputs:
-        key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
-        path: '**/node_modules'
+    # - task: CacheBeta@0
+    #   inputs:
+    #     key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
+    #     path: '**/node_modules'
 
     - script: |
         npm ci --no-audit --prefer-offline --progress=false
