@@ -23,7 +23,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy the build output from the previous stage
-COPY --from=builder /app/dist/apps/<your-app-name> /app
+COPY --from=builder /app/dist/apps/realworld/app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
