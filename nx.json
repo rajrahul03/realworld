@@ -85,16 +85,9 @@
   "defaultProject": "api",
   "tasksRunnerOptions": {
     "default": {
-      "runner": "@nrwl/nx-cloud",
+      "runner": "@nrwl/workspace/tasks-runners/default",
       "options": {
-        "accessToken": "NzJiNGQ0MmItMWQ0Yi00ZGNjLTlmYmItNDBkYzU5ZjY2N2E4fHJlYWQtd3JpdGU=",
-        "cacheableOperations": ["build", "test", "lint", "e2e"],
-        "parallel": 3,
-        "planLimits": {
-          "maxNumberOfAgents": 3,
-          "maxStoragePerAgent": "10GB",
-          "maxParallelExecutions": 3
-        }
+        "cacheableOperations": ["build", "test", "lint", "e2e"]
       }
     }
   }
