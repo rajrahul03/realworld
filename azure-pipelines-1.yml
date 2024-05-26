@@ -1,21 +1,37 @@
-# Node.js with React
-# Build a Node.js project that uses React.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
 trigger:
-- main
+- none
 
-pool:
-  vmImage: ubuntu-latest
+jobs:
+- job: linting
+  displayName: 'Linting'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - checkout: self
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.x'
-  displayName: 'Install Node.js'
+  - task: UseNode@1
+    inputs:
+      version: '18.x'
+      checkLatest: true
 
-- script: |
-    npm install
-    npm run build
-  displayName: 'npm install and build'
+  - script: |
+      echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
+    displayName: 'Get node version'
+
+  - task: CacheBeta@0
+    inputs:
+      key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
+      path: '**/node_modules'
+
+  - script: |
+      npm ci --no-audit --prefer-offline --progress=false
+    displayName: 'Install dependencies'
+    condition: ne(variables['Agent.CacheRestored'], 'true')
+
+  - script: |
+      npm run prettier:check
+    displayName: 'Check prettier'
+
+  - script: |
+      npm run lint:check
+    displayName: 'Check ESLinter'
