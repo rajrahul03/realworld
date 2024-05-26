@@ -27,7 +27,7 @@ COPY --from=builder /app/dist/apps/realworld /app
 
 # Install only production dependencies
 COPY package*.json ./
-RUN npm install --legacy-peer-deps --production
+RUN npm install --production
 
 
 # Expose the application port (adjust this based on your application)
