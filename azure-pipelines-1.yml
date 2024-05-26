@@ -177,7 +177,7 @@ stages:
     steps:
     - checkout: self
 - stage: DockerbuildPush
-  displayName: 'Deploy Stage'
+  displayName: 'Docker Stage'
   jobs:
   - job: buildandpush
     displayName: 'Build and Push Docker Image'
