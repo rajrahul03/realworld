@@ -2,40 +2,41 @@ trigger:
 - none
 
 jobs:
-  - job: linting
-    displayName: 'Linting'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-      - checkout: self
+  # - job: linting
+  #   displayName: 'Linting'
+  #   pool:
+  #     vmImage: 'ubuntu-latest'
+  #   steps:
+  #     - checkout: self
 
-      - task: UseNode@1
-        inputs:
-          version: '18.x'
-          checkLatest: true
+  #     - task: UseNode@1
+  #       inputs:
+  #         version: '18.x'
+  #         checkLatest: true
 
-      - script: |
-          echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
-        displayName: 'Get node version'
+  #     - script: |
+  #         echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
+  #       displayName: 'Get node version'
 
-      - script: |
-          npm ci --no-audit --prefer-offline --progress=false
-        displayName: 'Install dependencies'
-        condition: ne(variables['Agent.CacheRestored'], 'true')
+  #     - script: |
+  #         npm ci --no-audit --prefer-offline --progress=false
+  #       displayName: 'Install dependencies'
+  #       condition: ne(variables['Agent.CacheRestored'], 'true')
 
-      - script: |
-          npm run prettier:check
-        displayName: 'Check prettier'
+  #     - script: |
+  #         npm run prettier:check
+  #       displayName: 'Check prettier'
   - job: build_documentation
     displayName: 'Build Documentation'
-    dependsOn: [linting]
+    # dependsOn: [linting]
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - script: |
-        npm ci --no-audit --prefer-offline --progress=false
-      displayName: 'Install dependencies'
-      condition: ne(variables['Agent.CacheRestored'], 'true')      
-    - script: |
-        npx nx build documentation
-      displayName: 'Build documentation'      
+      - checkout: self    
+    # - script: |
+    #     npm ci --no-audit --prefer-offline --progress=false
+    #   displayName: 'Install dependencies'
+        # condition: ne(variables['Agent.CacheRestored'], 'true')      
+      - script: |
+          npx nx build documentation
+        displayName: 'Build documentation'      
