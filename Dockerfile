@@ -29,7 +29,7 @@ COPY --from=builder /app/dist/apps/realworld /app
 COPY package*.json ./
 
 # Install only production dependencies using the legacy-peer-deps option
-RUN npm install --legacy-peer-deps --production
+RUN npm install --legacy-peer-deps --production --verbose
 
 # Expose the application port (adjust this based on your application)
 EXPOSE 3000
