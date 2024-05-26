@@ -16,9 +16,6 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Ensure the build output exists
-RUN ls -la /app/dist/apps/realworld
-
 # Stage 2: Run the application
 FROM node:18-alpine
 
