@@ -14,7 +14,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN npm run build --verbose
 
 # Stage 2: Run the application
 FROM node:18-alpine
