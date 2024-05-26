@@ -83,6 +83,13 @@
     }
   },
   "defaultProject": "api",
-  "nxCloudAccessToken": "NzJiNGQ0MmItMWQ0Yi00ZGNjLTlmYmItNDBkYzU5ZjY2N2E4fHJlYWQtd3JpdGU=",
-  "neverConnectToCloud": true
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx-cloud",
+      "options": {
+        "accessToken": "NzJiNGQ0MmItMWQ0Yi00ZGNjLTlmYmItNDBkYzU5ZjY2N2E4fHJlYWQtd3JpdGU=",
+        "planLimits": {}
+      }
+    }
+  }
 }
