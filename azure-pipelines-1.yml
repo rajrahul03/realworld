@@ -33,10 +33,10 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
       - checkout: self    
-    # - script: |
-    #     npm ci --no-audit --prefer-offline --progress=false
-    #   displayName: 'Install dependencies'
-        # condition: ne(variables['Agent.CacheRestored'], 'true')      
+      - script: |
+          npm ci --no-audit --prefer-offline --progress=false
+        displayName: 'Install dependencies'
+        condition: ne(variables['Agent.CacheRestored'], 'true')  
       - script: |
           npx nx build documentation
         displayName: 'Build documentation'      
