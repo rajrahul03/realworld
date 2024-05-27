@@ -7,35 +7,26 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies using the legacy-peer-deps option
-RUN npm install --legacy-peer-deps
+# Install dependencies
+RUN npm install
 
 # Copy all source files
 COPY . .
 
 # Build the application
-RUN npm run build --verbose
-RUN ls -la /app/dist/apps/demo
-# Stage 2: Run the application
-FROM node:18-alpine
+RUN npm run build
 
-# Set working directory
-WORKDIR /app
+# Stage 2: Serve the application with nginx
+FROM nginx:alpine
 
 # Copy the build output from the previous stage
-COPY --from=builder /app/dist/apps/demo /app
+COPY --from=builder /app/dist/apps/realworld /usr/share/nginx/html
 
-# Rename hashed files to their normal names
+# Copy nginx configuration if needed (optional)
+# COPY nginx.conf /etc/nginx/nginx.conf
 
+# Expose the application port (usually 80 for HTTP)
+EXPOSE 80
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
-RUN ls -la /app
-# Install only production dependencies using the legacy-peer-deps option
-RUN npm install --force --legacy-peer-deps --production --verbose
-
-# Expose the application port (adjust this based on your application)
-EXPOSE 3000
-
-# Start the application
-CMD ["node", "main.js"]
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
