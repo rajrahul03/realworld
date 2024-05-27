@@ -82,9 +82,5 @@
       "style": "css"
     }
   },
-  "defaultProject": "api",
-  "tasksRunnerOptions": {
-      }
-    }
-  }
+  "defaultProject": "api"
 }
