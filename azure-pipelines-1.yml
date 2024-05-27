@@ -157,7 +157,7 @@ stages:
       condition: ne(variables['Agent.CacheRestored'], 'true')
 
     - script: |
-        npx nx build demo
+        npx nx build conduit-demo
       displayName: 'Build demo'
 
     - task: Bash@3
