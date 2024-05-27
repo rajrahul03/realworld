@@ -21,10 +21,6 @@ stages:
         echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
       displayName: 'Get node version'
 
-    # - task: Cache@2
-    #   inputs:
-    #     key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
-    #     path: '**/node_modules'
 
     - script: |
         npm ci --no-audit --prefer-offline --progress=false
@@ -34,84 +30,6 @@ stages:
     - script: |
         npm run prettier:check
       displayName: 'Check prettier'
-
-  - job: build
-    displayName: 'Build'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - checkout: self
-
-    - task: UseNode@1
-      inputs:
-        version: '18.x'
-        checkLatest: true
-
-    - script: |
-        echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
-      displayName: 'Get node version'
-
-
-    - script: |
-        npm ci --no-audit --prefer-offline --progress=false
-      displayName: 'Install dependencies'
-      condition: ne(variables['Agent.CacheRestored'], 'true')
-
-    - script: |
-        npx nx build
-      displayName: 'Build application'
-  - job: unit_testing_api
-    displayName: 'Unit Testing (API)'
-    dependsOn: linting
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - checkout: self
-
-    - task: UseNode@1
-      inputs:
-        version: '18.x'
-        checkLatest: true
-
-    - script: |
-        echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
-      displayName: 'Get node version'
-
-    - script: |
-        npm ci --no-audit --prefer-offline --progress=false
-      displayName: 'Install dependencies'
-      condition: ne(variables['Agent.CacheRestored'], 'true')
-
-    - script: |
-        npm run test --ci --lastCommit --maxWorkers=50%
-      displayName: 'Check unit tests (API)'
-
-  - job: unit_testing_demo
-    displayName: 'Unit Testing (Demo)'
-    dependsOn: linting
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - checkout: self
-
-    - task: UseNode@1
-      inputs:
-        version: '18.x'
-        checkLatest: true
-
-    - script: |
-        echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
-      displayName: 'Get node version'
-
-
-    - script: |
-        npm ci --no-audit --prefer-offline --progress=false
-      displayName: 'Install dependencies'
-      condition: ne(variables['Agent.CacheRestored'], 'true')
-
-    - script: |
-        echo "No unit tests for demo"
-      displayName: 'Check unit tests'
 
 - stage: Build
   displayName: 'Build'
@@ -166,6 +84,87 @@ stages:
     - script: |
         npx nx build api
       displayName: 'Build api'    
+
+- stage: UnitTesting
+  displayName: 'UnitTest'
+  jobs:
+  - job: unittest
+    displayName: 'Unit Test'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+
+    - task: UseNode@1
+      inputs:
+        version: '18.x'
+        checkLatest: true
+
+    - script: |
+        echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
+      displayName: 'Get node version'
+
+
+    - script: |
+        npm ci --no-audit --prefer-offline --progress=false
+      displayName: 'Install dependencies'
+      condition: ne(variables['Agent.CacheRestored'], 'true')
+
+    - script: |
+        npx nx build
+      displayName: 'Build application'
+  - job: unit_testing_api
+    displayName: 'Unit Testing (API)'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+
+    - task: UseNode@1
+      inputs:
+        version: '18.x'
+        checkLatest: true
+
+    - script: |
+        echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
+      displayName: 'Get node version'
+
+    - script: |
+        npm ci --no-audit --prefer-offline --progress=false
+      displayName: 'Install dependencies'
+      condition: ne(variables['Agent.CacheRestored'], 'true')
+
+    - script: |
+        npm run test --ci --lastCommit --maxWorkers=50%
+      displayName: 'Check unit tests (API)'
+
+  - job: unit_testing_demo
+    displayName: 'Unit Testing (Demo)'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+
+    - task: UseNode@1
+      inputs:
+        version: '18.x'
+        checkLatest: true
+
+    - script: |
+        echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
+      displayName: 'Get node version'
+
+
+    - script: |
+        npm ci --no-audit --prefer-offline --progress=false
+      displayName: 'Install dependencies'
+      condition: ne(variables['Agent.CacheRestored'], 'true')
+
+    - script: |
+        echo "No unit tests for demo"
+      displayName: 'Check unit tests'
+
+
 - stage: DockerbuildPush
   displayName: 'Docker Stage'
   jobs:
