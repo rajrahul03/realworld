@@ -160,15 +160,15 @@ stages:
         npx nx build conduit-demo
       displayName: 'Build demo'
 
-    - task: Bash@3
-      inputs:
-        targetType: 'inline'
-        script: |
-          npx netlify deploy --auth $(NETLIFY_AUTH_TOKEN) --site $(DEMO_NETLIFY_ID) --dir ./dist/apps/demo --prod
-      displayName: 'Deploy to Netlify'
-      env:
-        NETLIFY_AUTH_TOKEN: $(NETLIFY_AUTH_TOKEN)
-        DEMO_NETLIFY_ID: $(DEMO_NETLIFY_ID)
+    # - task: Bash@3
+    #   inputs:
+    #     targetType: 'inline'
+    #     script: |
+    #       npx netlify deploy --auth $(NETLIFY_AUTH_TOKEN) --site $(DEMO_NETLIFY_ID) --dir ./dist/apps/demo --prod
+    #   displayName: 'Deploy to Netlify'
+    #   env:
+    #     NETLIFY_AUTH_TOKEN: $(NETLIFY_AUTH_TOKEN)
+    #     DEMO_NETLIFY_ID: $(DEMO_NETLIFY_ID)
 
   - job: deploy_other_service
     displayName: 'Deploy Other Service'
