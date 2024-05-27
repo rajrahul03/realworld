@@ -16,9 +16,6 @@ COPY . .
 # Build the application
 RUN npm run build --verbose
 
-# Display copied files
-RUN ls -la /app/dist/apps/conduit/demo
-
 # Stage 2: Run the application
 FROM node:18-alpine
 
@@ -28,20 +25,20 @@ WORKDIR /app
 # Copy the build output from the previous stage
 COPY --from=builder /app/dist/apps/conduit/demo /app
 
+# Rename hashed files to their normal names
+RUN mv /app/main.*.js /app/main.js \
+    && mv /app/polyfills.*.js /app/polyfills.js \
+    && mv /app/runtime.*.js /app/runtime.js \
+    && mv /app/styles.*.css /app/styles.css
+
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
 # Install only production dependencies using the legacy-peer-deps option
 RUN npm install --force --legacy-peer-deps --production --verbose
 
-# Set executable permissions to the main.js file
-RUN chmod +x /app/main*.js
-
-# Display copied files in the final image
-RUN ls -la /app
-
 # Expose the application port (adjust this based on your application)
 EXPOSE 3000
 
-# Start the application (adjust the start command based on your application)
-CMD ["node", "main*.js"]
+# Start the application
+CMD ["node", "main.js"]
