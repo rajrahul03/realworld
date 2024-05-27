@@ -188,7 +188,7 @@ stages:
     - task: Docker@2
       inputs:
         command: 'buildAndPush'
-        repository: 'rajrahul03/realworld'
+        repository: 'rajrahul03/conduit-demo'
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         containerRegistry: 'dockerhub'
         tags: |
