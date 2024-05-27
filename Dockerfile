@@ -23,7 +23,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy the build output from the previous stage
-COPY --from=builder /app/dist/apps/conduit/demo /app
+COPY --from=builder /app/dist/apps/demo /app
 
 # Rename hashed files to their normal names
 RUN mv /app/main.*.js /app/main.js \
