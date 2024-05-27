@@ -23,10 +23,11 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy the build output from the previous stage
-COPY --from=builder /app/dist/apps/realworld /app
+COPY --from=builder /app/dist/apps/conduit/demo /app
 
 # Copy package.json and package-lock.json
-COPY package*.json ./
+COPY --from=builder /app/package.json /app/package.json
+COPY --from=builder /app/package-lock.json /app/package-lock.json
 
 # Install only production dependencies using the legacy-peer-deps option
 RUN npm install --legacy-peer-deps --production --verbose
