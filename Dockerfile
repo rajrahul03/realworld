@@ -10,32 +10,29 @@ COPY package*.json ./
 # Install dependencies using the legacy-peer-deps option
 RUN npm install --legacy-peer-deps
 
+# Ensure the correct TypeScript version
+RUN npm install typescript@4.9.3 --save-dev
+
 # Copy all source files
 COPY . .
 
-# Build the application
-RUN npm run build --verbose
-# List the build output directory to debug
-RUN ls -la /app/dist/apps/conduit/demo 
+# Build the specific project
+RUN npx nx build conduit-demo --verbose
+
+# List the build output directory to verify its contents
+RUN ls -la /app/dist/apps/conduit/demo
 
 # Stage 2: Run the application
-FROM node:18-alpine
+FROM nginx:alpine
 
 # Set working directory
-WORKDIR /app
+WORKDIR /usr/share/nginx/html
 
 # Copy the build output from the previous stage
-COPY --from=builder /app/dist/apps/conduit/demo /app
+COPY --from=builder /app/dist/apps/conduit/demo .
 
-# Copy package.json and package-lock.json
-COPY --from=builder /app/package.json /app/package.json
-COPY --from=builder /app/package-lock.json /app/package-lock.json
+# Expose the application port (default for nginx)
+EXPOSE 80
 
-# Install only production dependencies using the legacy-peer-deps option
-RUN npm install --legacy-peer-deps --production --verbose
-
-# Expose the application port (adjust this based on your application)
-EXPOSE 3000
-
-# Start the application (adjust the start command based on your application)
-CMD ["node", "main.js"]
+# Start nginx server
+CMD ["nginx", "-g", "daemon off;"]
