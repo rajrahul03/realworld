@@ -16,7 +16,7 @@ COPY . .
 # Build the application
 RUN npm run build --verbose
 # List the build output directory to debug
-RUN ls -la /app/dist/apps/demo
+RUN ls -la /app/dist/apps/api
 
 # Stage 2: Run the application
 FROM node:18-alpine
@@ -25,7 +25,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy the build output from the previous stage
-COPY --from=builder /app/dist/apps/demo /app
+COPY --from=builder /app/dist/apps/api /app
 
 # Copy package.json and package-lock.json
 COPY --from=builder /app/package.json /app/package.json
