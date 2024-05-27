@@ -2,8 +2,8 @@ trigger:
 - main
 
 stages:
-- stage: Build_and_Test
-  displayName: 'Build and Test'
+- stage: Lint
+  displayName: 'Lint'
   jobs:
   - job: linting
     displayName: 'Linting'
@@ -51,10 +51,6 @@ stages:
         echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
       displayName: 'Get node version'
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
-    #     path: '**/node_modules'
 
     - script: |
         npm ci --no-audit --prefer-offline --progress=false
@@ -80,11 +76,6 @@ stages:
     - script: |
         echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
       displayName: 'Get node version'
-
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
-    #     path: '**/node_modules'
 
     - script: |
         npm ci --no-audit --prefer-offline --progress=false
@@ -112,10 +103,6 @@ stages:
         echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
       displayName: 'Get node version'
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
-    #     path: '**/node_modules'
 
     - script: |
         npm ci --no-audit --prefer-offline --progress=false
@@ -126,11 +113,11 @@ stages:
         echo "No unit tests for demo"
       displayName: 'Check unit tests'
 
-- stage: Deploy
-  displayName: 'Deploy'
+- stage: Build
+  displayName: 'Build'
   jobs:
-  - job: deploy_live_demo
-    displayName: 'Deploy Live (Demo)'
+  - job: 
+    displayName: 'conduit-demo'
 #    dependsOn: none
     pool:
       vmImage: 'ubuntu-latest'
@@ -146,11 +133,6 @@ stages:
         echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
       displayName: 'Get node version'
 
-    # - task: CacheBeta@0
-    #   inputs:
-    #     key: 'node|$(Agent.OS)|$(Build.SourcesDirectory)/**/package-lock.json|$(nodeVersion)'
-    #     path: '**/node_modules'
-
     - script: |
         npm ci --no-audit --prefer-offline --progress=false
       displayName: 'Install dependencies'
@@ -160,26 +142,34 @@ stages:
         npx nx build conduit-demo
       displayName: 'Build demo'
 
-    # - task: Bash@3
-    #   inputs:
-    #     targetType: 'inline'
-    #     script: |
-    #       npx netlify deploy --auth $(NETLIFY_AUTH_TOKEN) --site $(DEMO_NETLIFY_ID) --dir ./dist/apps/demo --prod
-    #   displayName: 'Deploy to Netlify'
-    #   env:
-    #     NETLIFY_AUTH_TOKEN: $(NETLIFY_AUTH_TOKEN)
-    #     DEMO_NETLIFY_ID: $(DEMO_NETLIFY_ID)
-
   - job: deploy_other_service
     displayName: 'Deploy Other Service'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
     - checkout: self
+
+    - task: UseNode@1
+      inputs:
+        version: '16.x'
+        checkLatest: true
+
+    - script: |
+        echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
+      displayName: 'Get node version'
+
+    - script: |
+        npm ci --no-audit --prefer-offline --progress=false
+      displayName: 'Install dependencies'
+      condition: ne(variables['Agent.CacheRestored'], 'true')
+
+    - script: |
+        npx nx build api
+      displayName: 'Build api'    
 - stage: DockerbuildPush
   displayName: 'Docker Stage'
   jobs:
-  - job: buildandpush
+  - job: buildandpushconduitdemo
     displayName: 'Build and Push Docker Image'
     pool:
       vmImage: 'ubuntu-latest'
@@ -192,4 +182,18 @@ stages:
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         containerRegistry: 'dockerhub'
         tags: |
-          $(Build.BuildId)    
+          $(Build.BuildId)  
+  # - job: buildandpush
+  #   displayName: 'Build and Push Docker Image'
+  #   pool:
+  #     vmImage: 'ubuntu-latest'
+  #   steps:
+  #   - checkout: self
+  #   - task: Docker@2
+  #     inputs:
+  #       command: 'buildAndPush'
+  #       repository: 'rajrahul03/conduit-api'
+  #       dockerfile: '$(Build.SourcesDirectory)/Dockerfile-api'
+  #       containerRegistry: 'dockerhub'
+  #       tags: |
+  #         $(Build.BuildId)              
