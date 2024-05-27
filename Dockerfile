@@ -20,7 +20,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Copy the build output from the previous stage
-COPY --from=builder /app/dist/apps/realworld /usr/share/nginx/html
+COPY --from=builder /app/dist/apps/demo /usr/share/nginx/html
 
 # Copy nginx configuration if needed (optional)
 # COPY nginx.conf /etc/nginx/nginx.conf
