@@ -35,7 +35,7 @@ COPY package*.json ./
 RUN npm install --force --legacy-peer-deps --production --verbose
 
 # Set executable permissions to the main.js file
-RUN chmod +x /app/main.js
+RUN chmod +x /app/main*.js
 
 # Display copied files in the final image
 RUN ls -la /app
@@ -44,4 +44,4 @@ RUN ls -la /app
 EXPOSE 3000
 
 # Start the application (adjust the start command based on your application)
-CMD ["node", "main.js"]
+CMD ["node", "main*.js"]
