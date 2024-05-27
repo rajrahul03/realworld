@@ -15,7 +15,7 @@ COPY . .
 
 # Build the application
 RUN npm run build --verbose
-
+RUN ls -la /app/dist/apps/demo
 # Stage 2: Run the application
 FROM node:18-alpine
 
@@ -26,14 +26,11 @@ WORKDIR /app
 COPY --from=builder /app/dist/apps/demo /app
 
 # Rename hashed files to their normal names
-RUN mv /app/main.*.js /app/main.js \
-    && mv /app/polyfills.*.js /app/polyfills.js \
-    && mv /app/runtime.*.js /app/runtime.js \
-    && mv /app/styles.*.css /app/styles.css
+
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
-
+RUN ls -la /app
 # Install only production dependencies using the legacy-peer-deps option
 RUN npm install --force --legacy-peer-deps --production --verbose
 
