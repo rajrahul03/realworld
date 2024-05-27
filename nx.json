@@ -84,10 +84,6 @@
   },
   "defaultProject": "api",
   "tasksRunnerOptions": {
-    "default": {
-      "runner": "@nrwl/workspace/tasks-runners/default",
-      "options": {
-        "cacheableOperations": ["build", "test", "lint", "e2e"]
       }
     }
   }
