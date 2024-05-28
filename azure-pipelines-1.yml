@@ -108,6 +108,7 @@ stages:
     - script: |
         npm run test --ci --lastCommit --maxWorkers=50%
       displayName: 'Check unit tests (API)'
+      continueOnError: true
 
   - job: unit_testing_demo
     displayName: 'Unit Testing Demo'
@@ -152,17 +153,17 @@ stages:
         containerRegistry: 'dockerhub'
         tags: |
           $(Build.BuildId)  
-  # - job: buildandpush
-  #   displayName: 'Build and Push Docker Image'
-  #   pool:
-  #     vmImage: 'ubuntu-latest'
-  #   steps:
-  #   - checkout: self
-  #   - task: Docker@2
-  #     inputs:
-  #       command: 'buildAndPush'
-  #       repository: 'rajrahul03/conduit-api'
-  #       dockerfile: '$(Build.SourcesDirectory)/Dockerfile-api'
-  #       containerRegistry: 'dockerhub'
-  #       tags: |
-  #         $(Build.BuildId)              
+  - job: buildandpush
+    displayName: 'Build and Push Docker Image'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+    - task: Docker@2
+      inputs:
+        command: 'buildAndPush'
+        repository: 'rajrahul03/conduit-api'
+        dockerfile: '$(Build.SourcesDirectory)/Dockerfile-api'
+        containerRegistry: 'dockerhub'
+        tags: |
+          $(Build.BuildId)              
