@@ -96,9 +96,7 @@ stages:
     steps:
     - checkout: self
     - task: Docker@2
-      displayName: build
+      displayName: login
       inputs:
         containerRegistry: realworldacr
-        repository: realworldapp
-        command: build
-        tags: '$(Build.BuildNumber)'
+        command: login
