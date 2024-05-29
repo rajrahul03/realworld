@@ -132,5 +132,5 @@ stages:
           # Install/Upgrade Helm chart
           helm upgrade --install realworld . \
             --set image.repository=realworldacr.azurecr.io/demoapp \
-            --set image.tag='20240529.7' \
+            --set image.tag='$(Build.BuildNumber)' \
             --namespace dev
