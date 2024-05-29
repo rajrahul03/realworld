@@ -24,7 +24,6 @@ stages:
     - script: |
         npm ci --no-audit --prefer-offline --progress=false
       displayName: 'Install dependencies'
-      condition: ne(variables['Agent.CacheRestored'], 'true')
 
     - script: |
         npm run prettier:check
@@ -35,7 +34,6 @@ stages:
   jobs:
   - job: 
     displayName: 'Build'
-#    dependsOn: none
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -58,6 +56,9 @@ stages:
         npx nx build demo
       displayName: 'Build demo'
 
+- stage: UnitTest
+  displayName: 'Unit Test'
+  jobs:
 
   - job: unit_testing
     displayName: 'Unit Testing'
@@ -78,11 +79,10 @@ stages:
     - script: |
         npm ci --no-audit --prefer-offline --progress=false
       displayName: 'Install dependencies'
-      condition: ne(variables['Agent.CacheRestored'], 'true')
 
     - script: |
         npm run test --ci --lastCommit --maxWorkers=50%
-      displayName: 'Check unit tests (API)'
+      displayName: 'Check unit tests'
       continueOnError: true
 
 
