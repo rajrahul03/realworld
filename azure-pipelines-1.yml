@@ -96,8 +96,9 @@ stages:
     steps:
     - checkout: self
     - task: Docker@2
-      displayName: buildAndPush
+      displayName: build
       inputs:
         containerRegistry: realworldacr
         repository: realworldapp
+        command: build
         tags: '$(Build.BuildNumber)'
