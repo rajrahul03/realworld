@@ -126,10 +126,11 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           # Change directory to the Helm chart location
+          az aks get-credentials --resource-group dev --name aks-cluster --overwrite-existing
           cd $(Build.SourcesDirectory)/helm/realworld
           
           # Install/Upgrade Helm chart
           helm upgrade --install realworld . \
             --set image.repository=realworldacr.azurecr.io/demoapp \
-            --set image.tag=$(Build.BuildNumber) \
+            --set image.tag='20240529.7' \
             --namespace dev
