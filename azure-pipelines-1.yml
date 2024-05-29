@@ -34,7 +34,7 @@ stages:
   displayName: 'Build'
   jobs:
   - job: 
-    displayName: 'conduit-demo'
+    displayName: 'Build'
 #    dependsOn: none
     pool:
       vmImage: 'ubuntu-latest'
@@ -53,39 +53,14 @@ stages:
     - script: |
         npm ci --no-audit --prefer-offline --progress=false
       displayName: 'Install dependencies'
-      condition: ne(variables['Agent.CacheRestored'], 'true')
 
     - script: |
-        npx nx build conduit-demo
+        npx nx build demo
       displayName: 'Build demo'
 
-  - job: build
-    displayName: 'Build'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - checkout: self
 
-    - task: UseNode@1
-      inputs:
-        version: '18.x'
-        checkLatest: true
-
-    - script: |
-        echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
-      displayName: 'Get node version'
-
-
-    - script: |
-        npm ci --no-audit --prefer-offline --progress=false
-      displayName: 'Install dependencies'
-      condition: ne(variables['Agent.CacheRestored'], 'true')
-
-    - script: |
-        npx nx build api
-      displayName: 'Build api'
-  - job: unit_testing_api
-    displayName: 'Unit Testing API'
+  - job: unit_testing
+    displayName: 'Unit Testing'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -110,49 +85,10 @@ stages:
       displayName: 'Check unit tests (API)'
       continueOnError: true
 
-  - job: unit_testing_demo
-    displayName: 'Unit Testing Demo'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - checkout: self
-
-    - task: UseNode@1
-      inputs:
-        version: '18.x'
-        checkLatest: true
-
-    - script: |
-        echo "##vso[task.setvariable variable=nodeVersion]$(node -v)"
-      displayName: 'Get node version'
-
-
-    - script: |
-        npm ci --no-audit --prefer-offline --progress=false
-      displayName: 'Install dependencies'
-      condition: ne(variables['Agent.CacheRestored'], 'true')
-
-    - script: |
-        echo "No unit tests for demo"
-      displayName: 'Check unit tests'   
 
 - stage: DockerbuildPush
-  displayName: 'Docker Stage'
+  displayName: 'Containerize'
   jobs:
-  - job: buildandpushconduitdemo
-    displayName: 'Build and Push Docker Image'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - checkout: self
-    - task: Docker@2
-      inputs:
-        command: 'buildAndPush'
-        repository: 'rajrahul03/conduit-demo'
-        dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
-        containerRegistry: 'dockerhub'
-        tags: |
-          $(Build.BuildId)  
   - job: buildandpush
     displayName: 'Build and Push Docker Image'
     pool:
@@ -162,8 +98,9 @@ stages:
     - task: Docker@2
       inputs:
         command: 'buildAndPush'
-        repository: 'rajrahul03/conduit-api'
-        dockerfile: '$(Build.SourcesDirectory)/Dockerfile-api'
+        repository: 'rajrahul03/realworlddemo'
+        dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         containerRegistry: 'dockerhub'
         tags: |
-          $(Build.BuildId)              
+          $(Build.BuildId)  
+  
