@@ -100,3 +100,4 @@ stages:
       inputs:
         containerRegistry: realworldacr
         repository: realworldapp
+        tags: '$(Build.BuildNumber)'
