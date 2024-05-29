@@ -1,6 +1,7 @@
 trigger:
 - main
-
+variables:
+- group: acr
 stages:
 - stage: Lint
   displayName: 'Lint'
@@ -100,3 +101,8 @@ stages:
       inputs:
         containerRegistry: realworldacr
         command: login
+    - bash: |
+        docker login realworldacr.azurecr.io -u $(dockeruser) -p $(dockerpass)
+        docker build . -t realworldacr.azurecr.io/demoapp:$(Build.BuildNumber)
+        docker push realworldacr.azurecr.io/demoapp:$(Build.BuildNumber)
+      displayName: 'Bash Script'        
