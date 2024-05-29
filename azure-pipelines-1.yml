@@ -104,7 +104,7 @@ stages:
       displayName: 'Bash Script'        
 
 - stage: Deploy
-  displayName: Deploy to Kubernetes
+  displayName: Deploy to DEV
   jobs:
   - job: DeployHelmChart
     displayName: Deploy Helm Chart to AKS
