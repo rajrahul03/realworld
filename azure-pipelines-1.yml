@@ -2,6 +2,7 @@ trigger:
 - main
 variables:
 - group: acr
+
 stages:
 - stage: Lint
   displayName: 'Lint'
@@ -101,3 +102,34 @@ stages:
         docker build . -t realworldacr.azurecr.io/demoapp:$(Build.BuildNumber)
         docker push realworldacr.azurecr.io/demoapp:$(Build.BuildNumber)
       displayName: 'Bash Script'        
+
+- stage: Deploy
+  displayName: Deploy to Kubernetes
+  jobs:
+  - job: DeployHelmChart
+    displayName: Deploy Helm Chart to AKS
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - checkout: self
+      displayName: 'Checkout Code'
+
+    - task: HelmInstaller@1
+      inputs:
+        helmVersion: 'latest'
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'Azure-Terraform'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          # Change directory to the Helm chart location
+          cd $(Build.SourcesDirectory)/helm/realworld
+          
+          # Install/Upgrade Helm chart
+          helm upgrade --install realworld . \
+            --set image.repository=realworldacr.azurecr.io/demoapp \
+            --set image.tag=$(Build.BuildNumber) \
+            --namespace dev
